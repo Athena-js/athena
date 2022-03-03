@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "es2015",
+    "lib": ["DOM", "ES2015"],
+    "declaration": true,
+    "declarationDir": "./dist",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "removeComments": false,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src", "types"]
+}
