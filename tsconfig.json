@@ -1,15 +1,21 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "es2015",
-    "lib": ["DOM", "ES2015"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["DOM", "ESNext"],
     "declaration": true,
     "declarationDir": "./dist",
     "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "strict": true,
     "skipLibCheck": true,
     "removeComments": false,
-    "forceConsistentCasingInFileNames": true
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@/*": ["./src/*"],
+    }
   },
-  "include": ["src", "types"]
+  "include": ["src", "./node_modules/@webgpu/types", "module.ts"]
 }
