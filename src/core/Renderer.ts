@@ -5,7 +5,7 @@ import { SceneNode } from '@/objects/SceneNode';
 import { PerspectiveCamera } from '@/camera/PerspectiveCamera';
 import { ShaderMaterial } from '@/material/ShaderMaterial';
 import { GPUInstance, checkGPU } from './GPUInstance';
-import { RendererPipeline } from './RenderPipeline';
+import { RenderPipeline } from './RenderPipeline';
 
 interface RendererProps {
   canvas: HTMLCanvasElement;
@@ -41,7 +41,7 @@ export class Renderer {
   protected _colorAttachments?: GPURenderPassColorAttachment[];
 
   // piplines
-  protected _cachedPipline = new Map<ShaderMaterial, RendererPipeline>();
+  protected _cachedPipline = new Map<ShaderMaterial, RenderPipeline>();
 
   constructor(props: RendererProps) {
     this.canvas = props.canvas;
@@ -92,7 +92,7 @@ export class Renderer {
       const bindGroupLayoutEntry = uniforms.map(u => u.layoutEntry);
 
       // create render pipeline
-      renderPipeline = new RendererPipeline(gpu, {
+      renderPipeline = new RenderPipeline(gpu, {
         bindGroupLayouts: [bindGroupLayoutEntry],
         vertexBufferLayouts: geometry.vertexBufferLayouts,
         vertexShaderModule: material.getVertexShaderModule(device),

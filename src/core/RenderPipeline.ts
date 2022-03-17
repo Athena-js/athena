@@ -1,6 +1,6 @@
 import { GPUInstance } from "./GPUInstance";
 
-interface RendererPipelineProps {
+interface RenderPipelineProps {
   bindGroupLayouts?: GPUBindGroupLayoutEntry[][];
   vertexBufferLayouts: GPUVertexBufferLayout[];
   vertexShaderModule: GPUShaderModule;
@@ -10,7 +10,7 @@ interface RendererPipelineProps {
   presentationFormat?: GPUTextureFormat;
 }
 
-export class RendererPipeline {
+export class RenderPipeline {
 
   gpu: GPUInstance;
   
@@ -31,7 +31,7 @@ export class RendererPipeline {
   protected _pipeline: GPURenderPipeline;
   protected _pipelineLayout?: GPUPipelineLayout;
 
-  constructor(gpu: GPUInstance, props: RendererPipelineProps) {
+  constructor(gpu: GPUInstance, props: RenderPipelineProps) {
     const { device, preferredFormat } = gpu;
 
     this.gpu = gpu;
