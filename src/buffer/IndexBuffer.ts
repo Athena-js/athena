@@ -5,6 +5,8 @@ interface IndexBufferProps {
   data: Uint16Array | Uint32Array;
 }
 
+const GPUBufferUsage = window.GPUBufferUsage;
+
 export class IndexBuffer extends BufferObject {
 
   readonly format: GPUIndexFormat;
@@ -13,7 +15,7 @@ export class IndexBuffer extends BufferObject {
     super({
       label: `[INDEX_BUFFER]`,
       initData: props.data,
-      usage: GPUBufferUsage.INDEX,
+      usage: GPUBufferUsage?.INDEX,
       mappedAtCreation: true
     });
     

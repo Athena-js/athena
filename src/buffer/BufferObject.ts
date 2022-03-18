@@ -34,6 +34,8 @@ interface BufferProps {
   initData?: TypedArray;
 }
 
+const GPUBufferUsage = window.GPUBufferUsage;
+
 export class BufferObject {
   
   readonly label: string;
@@ -47,7 +49,7 @@ export class BufferObject {
 
   constructor(props: BufferProps) {
     this.label = props.label ?? '';
-    this.usage = props.usage ?? GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST;
+    this.usage = props.usage ?? (GPUBufferUsage?.VERTEX | GPUBufferUsage?.COPY_DST);
     this.mappedAtCreation = props.mappedAtCreation ?? (props.initData ? true : false);
 
     this.data = props.initData;

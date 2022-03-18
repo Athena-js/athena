@@ -61,7 +61,7 @@ ul.menu {
   margin-right: 10px;
 }
 
-ul.submenu li {
+ul#submenu li {
   font-weight: 500;
   width: 100%;
   margin-left: -20px;
@@ -69,20 +69,60 @@ ul.submenu li {
   border-bottom: 1px solid var(--border-1);
 }
 
-ul.submenu a {
+ul#submenu a {
   display: flex;
   align-items: center;
   cursor: pointer;
 }
 
-ul.submenu a:hover {
+ul#submenu a:hover {
   color: var(--primary-2);
 }
 
-ul.submenu a:active {
+ul#submenu a:active {
   color: var(--primary-1);
 }
 
-ul.submenu a.active {
+ul#submenu a.active {
   color: var(--primary-2);
+}
+
+#not-support-webgpu {
+  position: absolute;
+  left: 303px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #d4ad59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#not-support-webgpu {
+  display: none;
+}
+
+#not-support-webgpu img {
+  width: 300px;
+}
+
+#not-support-webgpu .err-text {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 30px;
+}
+
+.err-text a {
+  color: var(--bg-2);
+  text-decoration: underline;
+}
+
+.err-text a:hover {
+  color: var(--bg-1);
 }

@@ -1,9 +1,28 @@
+const MENU_CONFIG = [
+  { name: 'Rotating Cube', href: '/examples/rotating_cube.html' },
+  { name: 'Instanced Cube', href: '/examples/instanced_cube.html' }
+];
+
 window.onload = () => {
+  if (!navigator.gpu) {
+    document.getElementById('not-support-webgpu').style.display = 'flex';
+  }
+
+  const submenuElm = document.getElementById('submenu');
+  submenuElm.innerHTML = MENU_CONFIG.reduce((str, item) => str + `
+    <li>
+      <a href="#${item.href}">
+        <i class="iconfont icon-dot"></i>
+        <div class="text">${item.name}</div>
+      </a>
+    </li>
+  `, '');
+
   let activeNode;
   let lastActiveNode;
 
   const setActive = () => {
-    const list = document.querySelectorAll('ul.submenu a');
+    const list = document.querySelectorAll('#submenu a');
     list.forEach((a) => {
       if (window.location.href.includes(a.href)) {
         lastActiveNode = activeNode;

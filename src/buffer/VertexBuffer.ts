@@ -9,6 +9,8 @@ interface VertexBufferProps {
   strideSize?: number;
 }
 
+const GPUBufferUsage = window.GPUBufferUsage;
+
 export class VertexBuffer extends BufferObject {
 
   readonly name: string;
@@ -26,7 +28,7 @@ export class VertexBuffer extends BufferObject {
     super({
       initData: props.data,
       label: `[VERTEX_BUFFER] ${name}`,
-      usage: GPUBufferUsage.VERTEX,
+      usage: GPUBufferUsage?.VERTEX,
     });
 
     this.name = name;

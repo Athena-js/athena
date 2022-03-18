@@ -13,6 +13,9 @@ export interface UniformBufferProps {
   visibility?: GPUShaderStageFlags;
 }
 
+const GPUBufferUsage = window.GPUBufferUsage;
+const GPUShaderStage = window.GPUShaderStage;
+
 export class UniformBuffer extends BufferObject {
 
   readonly binding: number;
@@ -32,14 +35,14 @@ export class UniformBuffer extends BufferObject {
 
     super({
       label: `[UNIFORM_BUFFER] ${name}`,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+      usage: GPUBufferUsage?.UNIFORM | GPUBufferUsage?.COPY_DST,
       size
     });
 
     this.name = name;
     this.size = size;
     this.binding = props.binding;
-    this.visibility = props.visibility ?? GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
+    this.visibility = props.visibility ?? (GPUShaderStage?.VERTEX | GPUShaderStage?.FRAGMENT);
     
     this.items = props.items;
     for (let i = 0; i < this.items.length; ++i) {
