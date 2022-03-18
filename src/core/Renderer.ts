@@ -87,9 +87,9 @@ export class Renderer {
 
   protected _renderMesh(node: Mesh, passEncoder: GPURenderPassEncoder) {
     const gpu = this.gpu!;
-    const { camera, presentationFormat } = this;
-    const { device, ctx } = gpu;
+    const { device } = gpu;
     const { geometry, material } = node;
+    const { camera, presentationFormat } = this;
 
     const uniforms = [camera.uniform, node.uniform];
 

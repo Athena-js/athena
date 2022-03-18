@@ -1,6 +1,7 @@
 const MENU_CONFIG = [
   { name: 'Rotating Cube', href: '/examples/rotating_cube.html' },
-  { name: 'Instanced Cube', href: '/examples/instanced_cube.html' }
+  { name: 'Instanced Cube', href: '/examples/instanced_cube.html' },
+  { name: 'GLTF Loader', href: '/examples/gltf_loader.html' }
 ];
 
 window.onload = () => {
