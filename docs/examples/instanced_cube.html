@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/global.css" />
+    <title>Athena · 3D</title>
+  </head>
+  <body>
+    <canvas id="canvas" style="width: 100vw; height: 100vh"></canvas>
+    <script src="../dist/index.js"></script>
+    <script>
+      const canvas = document.getElementById('canvas');
+
+      (async () => {
+        const camera = new Athena.PerspectiveCamera({
+          position: new Athena.Vector3(100, 100, 100),
+          lookAt: new Athena.Vector3(0, 0, 0),
+          fov: 60
+        });
+
+        const scene = new Athena.SceneNode();
+
+        const a = 5;
+        const cubes = [];
+
+        for (let x = -a; x <= a; x++) {
+          for (let y = -a; y <= a; y++) {
+            for (let z = -a; z <= a; z++) {
+              const cube = new Athena.Mesh({
+                geometry: new Athena.CubeGeometry(),
+                material: new Athena.NormalMaterial()
+              });
+              cube.position.set(Math.random() * 100, Math.random() * 100, Math.random() * 100);
+              scene.add(cube);
+              cubes.push(cube);
+            }
+          }
+        }
+
+        const renderer = new Athena.Renderer({ canvas, scene, camera });
+
+        const render = () => {
+          requestAnimationFrame(render);
+          renderer.render();
+
+          cubes.forEach((cube) => {
+            cube.rotation.x = Date.now() / 1000;
+            cube.rotation.y = Date.now() / 1000;
+          });
+        };
+
+        render();
+      })();
+    </script>
+  </body>
+</html>

@@ -58,24 +58,34 @@ export class Renderer {
 
   render() {
     if (this.gpuChecking) return;
+    const { device, ctx } = this.gpu!;
     this._handleResize();
-    this.camera.updateMatrix(this.gpu!.device);
-    this._renderNode(this.scene);
+    this.camera.updateMatrix(device);
+    
+    this._colorAttachments![0].view = ctx.getCurrentTexture().createView();
+
+    const commandEncoder = device.createCommandEncoder();
+    const passEncoder = commandEncoder?.beginRenderPass(this._renderPassDescriptor!);
+
+    this._renderNode(this.scene, passEncoder);
+
+    passEncoder.end();
+    device.queue.submit([commandEncoder.finish()]);
   }
 
-  protected _renderNode(node: SceneNode) {
+  protected _renderNode(node: SceneNode, passEncoder: GPURenderPassEncoder) {
     node.updateMatrix();
 
     if (node instanceof Mesh) {
-      this._renderMesh(node);
+      this._renderMesh(node, passEncoder);
     }
 
     for (const child of node.children) {
-      this._renderNode(child);
+      this._renderNode(child, passEncoder);
     }
   }
 
-  protected _renderMesh(node: Mesh) {
+  protected _renderMesh(node: Mesh, passEncoder: GPURenderPassEncoder) {
     const gpu = this.gpu!;
     const { camera, presentationFormat } = this;
     const { device, ctx } = gpu;
@@ -107,18 +117,11 @@ export class Renderer {
       entries: uniforms.map(u => u.getBindGroupEntry(device)),
     });
 
-    this._colorAttachments![0].view = ctx.getCurrentTexture().createView();
-
-    const commandEncoder = device.createCommandEncoder();
-    const passEncoder = commandEncoder?.beginRenderPass(this._renderPassDescriptor!);
-    
     passEncoder.setPipeline(renderPipeline.pipeline);
     passEncoder.setBindGroup(0, bindGroup);
-    geometry.attach(device, passEncoder);
+    geometry.attachVertexBuffer(device, passEncoder);
+    geometry.attachIndexBuffer(device, passEncoder);
     passEncoder.drawIndexed(geometry.indexCount);
-
-    passEncoder.end();
-    device.queue.submit([commandEncoder.finish()]);
   }
 
   protected _handleResize(force = false) {
@@ -157,7 +160,7 @@ export class Renderer {
         view: this._renderTarget.createView(),
         storeOp: 'store',
         loadOp: 'clear',
-        clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 },
+        clearValue: { r: 0.1, g: 0.1, b: 0.1, a: 1.0 },
       }];
 
       // update depth texture

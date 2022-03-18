@@ -57,10 +57,13 @@ export class BufferGeometry {
     return this.index.data!.length;
   }
   
-  attach(device: GPUDevice, passEncoder: GPURenderPassEncoder) {
+  attachVertexBuffer(device: GPUDevice, passEncoder: GPURenderPassEncoder) {
     this.position.attach(device, passEncoder);
     this.uv.attach(device, passEncoder);
     this.normal.attach(device, passEncoder);
+  }
+
+  attachIndexBuffer(device: GPUDevice, passEncoder: GPURenderPassEncoder) {
     this.index.attach(device, passEncoder);
   }
 

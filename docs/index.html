@@ -4,15 +4,43 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_3257842_ztr1rlp8gyn.css" />
     <link rel="stylesheet" href="./styles/global.css" />
-    <title>Athena · 3D</title>
+    <link rel="stylesheet" href="./styles/home.css" />
+    <script src="./scripts/home.js"></script>
+    <title>Athena.js · 3D Framework</title>
   </head>
   <body>
-    <div class="w-full h-full flex">
-      <div class="h-full" style="flex: 0 0 250px">
-        <div>Athena · 3D</div>
+    <div class="container">
+      <div class="left-panel">
+        <div class="title-wrapper">
+          <img src="./assets/image/logo.png" />
+          <div>
+            <div class="title">Athena.js</div>
+            <div class="description">3D Framework on WebGPU</div>
+          </div>
+        </div>
+        <ul class="menu">
+          <li>
+            <a><i class="iconfont icon-glasses"></i>EXAMPLES</a>
+            <ul class="submenu">
+              <li>
+                <a href="#/examples/rotating_cube.html">
+                  <i class="iconfont icon-dot"></i>
+                  <div class="text">Rotating Cube</div>
+                </a>
+              </li>
+              <li>
+                <a href="#/examples/instanced_cube.html">
+                  <i class="iconfont icon-dot"></i>
+                  <div class="text">Instanced Cube</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
       </div>
-      <iframe src="./examples/rotate_cube.html" class="w-full" />
+      <iframe id="iframe">
     </div>
   </body>
 </html>

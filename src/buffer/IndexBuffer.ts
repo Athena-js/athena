@@ -7,20 +7,16 @@ interface IndexBufferProps {
 
 export class IndexBuffer extends BufferObject {
 
-  readonly name: string;
   readonly format: GPUIndexFormat;
 
   constructor(props: IndexBufferProps) {
-    const name = props.name ?? '';
-    
     super({
-      label: `[INDEX_BUFFER] ${name}`,
+      label: `[INDEX_BUFFER]`,
       initData: props.data,
       usage: GPUBufferUsage.INDEX,
       mappedAtCreation: true
     });
     
-    this.name = name;
     this.format = this.data instanceof Uint16Array ? 'uint16' : 'uint32';
   }
 
