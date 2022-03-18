@@ -11,44 +11,39 @@
     <canvas id="canvas" style="width: 100vw; height: 100vh"></canvas>
     <script src="../dist/index.js"></script>
     <script>
-      const canvas = document.getElementById('canvas');
+      const CUBE_COUNT = 500;
 
       (async () => {
+        const canvas = document.getElementById('canvas');
+
         const camera = new Athena.PerspectiveCamera({
-          position: new Athena.Vector3(100, 100, 100),
+          position: new Athena.Vector3(50, 50, 50),
           lookAt: new Athena.Vector3(0, 0, 0),
           fov: 60
         });
 
         const scene = new Athena.SceneNode();
 
-        const a = 5;
         const cubes = [];
+        const random = () => (Math.random() - 0.5) * 100;
 
-        for (let x = -a; x <= a; x++) {
-          for (let y = -a; y <= a; y++) {
-            for (let z = -a; z <= a; z++) {
-              const cube = new Athena.Mesh({
-                geometry: new Athena.CubeGeometry(),
-                material: new Athena.NormalMaterial()
-              });
-              cube.position.set(Math.random() * 100, Math.random() * 100, Math.random() * 100);
-              scene.add(cube);
-              cubes.push(cube);
-            }
-          }
+        for (let x = 0; x < CUBE_COUNT; x++) {
+          const cube = new Athena.Mesh({
+            geometry: new Athena.CubeGeometry(),
+            material: new Athena.NormalMaterial()
+          });
+          cube.position.set(random(), random(), random());
+          cube.rotation.set(random(), random(), random());
+          scene.add(cube);
+          cubes.push(cube);
         }
 
         const renderer = new Athena.Renderer({ canvas, scene, camera });
 
         const render = () => {
           requestAnimationFrame(render);
+          scene.rotation.y = Date.now() / 1000;
           renderer.render();
-
-          cubes.forEach((cube) => {
-            cube.rotation.x = Date.now() / 1000;
-            cube.rotation.y = Date.now() / 1000;
-          });
         };
 
         render();

@@ -11,9 +11,10 @@
     <canvas id="canvas" style="width: 100vw; height: 100vh"></canvas>
     <script src="../dist/index.js"></script>
     <script>
-      const canvas = document.getElementById('canvas');
 
       (async () => {
+        const canvas = document.getElementById('canvas');
+
         const camera = new Athena.PerspectiveCamera({
           position: new Athena.Vector3(0, 3, 3),
           lookAt: new Athena.Vector3(0, 0, 0),
@@ -32,8 +33,8 @@
 
         const render = () => {
           requestAnimationFrame(render);
-          renderer.render();
           cube.rotation.y = Date.now() / 1000;
+          renderer.render();
         };
 
         render();
