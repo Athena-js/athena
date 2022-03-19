@@ -13,9 +13,11 @@
     "removeComments": false,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-    }
+      "@/*": ["./src/*"]
+    },
+    "plugins": [{ "transform": "@zerollup/ts-transform-paths" }]
   },
-  "include": ["src", "./node_modules/@webgpu/types", "module.ts"]
+  "include": ["src", "./node_modules/@webgpu/types"]
 }
