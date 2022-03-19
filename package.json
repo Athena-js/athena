@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "prepare": "husky install",
+    "prepublishOnly": "npm run build",
     "dev": "rollup -w -c",
     "build": "NODE_ENV=production rollup -c"
   },
