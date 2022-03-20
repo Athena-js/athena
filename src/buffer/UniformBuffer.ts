@@ -20,7 +20,6 @@ export class UniformBuffer extends BufferObject {
 
   readonly binding: number;
   readonly name: string;
-  readonly size: number;
   readonly visibility: GPUShaderStageFlags;
   readonly items: UniformItem[];
   readonly layoutEntry: GPUBindGroupLayoutEntry;
@@ -40,7 +39,6 @@ export class UniformBuffer extends BufferObject {
     });
 
     this.name = name;
-    this.size = size;
     this.binding = props.binding;
     this.visibility = props.visibility ?? (GPUShaderStage?.VERTEX | GPUShaderStage?.FRAGMENT);
     
