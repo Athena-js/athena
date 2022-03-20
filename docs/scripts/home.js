@@ -5,19 +5,20 @@ const MENU_CONFIG = [
 ];
 
 window.onload = () => {
-  if (!navigator.gpu) {
-    document.getElementById('not-support-webgpu').style.display = 'flex';
-  }
-
   const submenuElm = document.getElementById('submenu');
-  submenuElm.innerHTML = MENU_CONFIG.reduce((str, item) => str + `
+  submenuElm.innerHTML = MENU_CONFIG.reduce(
+    (str, item) =>
+      str +
+      `
     <li>
       <a href="#${item.href}">
         <i class="iconfont icon-dot"></i>
         <div class="text">${item.name}</div>
       </a>
     </li>
-  `, '');
+  `,
+    ''
+  );
 
   let activeNode;
   let lastActiveNode;

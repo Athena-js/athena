@@ -4,6 +4,7 @@ import { Vector2 } from '@/math/Vector';
 import { SceneNode } from '@/objects/SceneNode';
 import { PerspectiveCamera } from '@/camera/PerspectiveCamera';
 import { ShaderMaterial } from '@/material/ShaderMaterial';
+import { LoadingPage } from '@/ui/LoadingPage';
 import { GPUInstance, checkGPU } from './GPUInstance';
 import { RenderPipeline } from './RenderPipeline';
 import { FrameController } from './FrameController'
@@ -15,15 +16,21 @@ interface RendererProps {
 }
 
 export class Renderer {
+  // canvas dom
   canvas: HTMLCanvasElement;
+
+  // scene root
   scene: SceneNode;
+
+  // camera
   camera: Camera;
 
+  // frame controller
   controls = new FrameController(this.render.bind(this));
 
   // check webgpu support
   gpu?: GPUInstance;
-  promise?: Promise<GPUInstance>;
+  promise?: Promise<GPUInstance | any>;
   gpuChecking = true;
 
   // msaa, must be 1 or 4
@@ -46,6 +53,9 @@ export class Renderer {
   // piplines
   protected _cachedPipline = new Map<ShaderMaterial, RenderPipeline>();
 
+  // loading page
+  protected _loadigPage: LoadingPage;
+
   // hooks
   protected _updateCallbacks: Callback[] = [];
 
@@ -53,12 +63,19 @@ export class Renderer {
     this.canvas = props.canvas;
     this.scene = props.scene;
     this.camera = props.camera;
+    
+    this._loadigPage = new LoadingPage(props.canvas);
 
     this.promise = checkGPU(this.canvas).then((gpu) => {
       this.gpu = gpu;
       this.gpuChecking = false
       this.presentationFormat = this.gpu.preferredFormat;
+      this._loadigPage.hide();
       return gpu;
+    }, (err) => {
+      console.warn(err);
+      this._loadigPage.setMessage('[ ERROR ] Sorry! Your browser does not support WebGPU.');
+      this.stop();
     });
   }
 
@@ -73,8 +90,10 @@ export class Renderer {
   }
 
   destroy() {
+    
+    this._loadigPage.destroy();
     ShaderMaterial.clearCache();
-    this.scene.destory();
+    this.scene.destroy();
     this.camera.destroy();
     this._renderTarget?.destroy();
     this._depthTexture?.destroy();
@@ -86,8 +105,9 @@ export class Renderer {
   }
 
   render() {
-    // await gpu checking
+    // waiting for webgpu device
     if (this.gpuChecking) return;
+
     const { device, ctx } = this.gpu!;
 
     // resize canvas

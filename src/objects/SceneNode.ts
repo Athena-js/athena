@@ -43,12 +43,12 @@ export class SceneNode {
     this.uniform = new UniformBuffer($$.Builtins.Uniform.TransformUniform);
   }
 
-  destory(node = this) {
+  destroy(node = this) {
     node.uniform.destroy();
     for (const child of node.children) {
       if (child instanceof Mesh) {
         child.uniform.destroy();
-        child.destory();
+        child.destroy();
       }
     }
   }
