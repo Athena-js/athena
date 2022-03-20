@@ -9,8 +9,6 @@ type ArrayEx<T, P extends number> =
 
 type NumberArray<P extends number> = ArrayEx<number, P>;
 
-type Callback = () => any;
-
 export class Vector<P extends number> {
 
   protected readonly _array: NumberArray<P>;

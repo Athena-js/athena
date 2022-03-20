@@ -6,6 +6,7 @@ import { PerspectiveCamera } from '@/camera/PerspectiveCamera';
 import { ShaderMaterial } from '@/material/ShaderMaterial';
 import { GPUInstance, checkGPU } from './GPUInstance';
 import { RenderPipeline } from './RenderPipeline';
+import { FrameController } from './FrameController'
 
 interface RendererProps {
   canvas: HTMLCanvasElement;
@@ -17,6 +18,8 @@ export class Renderer {
   canvas: HTMLCanvasElement;
   scene: SceneNode;
   camera: Camera;
+
+  controls = new FrameController(this.render.bind(this));
 
   // check webgpu support
   gpu?: GPUInstance;
@@ -43,6 +46,9 @@ export class Renderer {
   // piplines
   protected _cachedPipline = new Map<ShaderMaterial, RenderPipeline>();
 
+  // hooks
+  protected _updateCallbacks: Callback[] = [];
+
   constructor(props: RendererProps) {
     this.canvas = props.canvas;
     this.scene = props.scene;
@@ -56,19 +62,48 @@ export class Renderer {
     });
   }
 
+  start() {
+    this.controls.start();
+    return this;
+  }
+
+  stop() {
+    this.controls.pause();
+    return this;
+  }
+
+  destroy() {
+    ShaderMaterial.clearCache();
+    this.scene.destory();
+    this.camera.destroy();
+    this._renderTarget?.destroy();
+    this._depthTexture?.destroy();
+  }
+
+  onUpdate(callback: Callback) {
+    this._updateCallbacks.push(callback);
+    return this;
+  }
+
   render() {
+    // await gpu checking
     if (this.gpuChecking) return;
     const { device, ctx } = this.gpu!;
-    this._handleResize();
-    this.camera.updateMatrix(device);
-    
-    this._colorAttachments![0].view = ctx.getCurrentTexture().createView();
 
+    // resize canvas
+    this._handleResize();
+
+    // update camera matrix
+    this.camera.updateMatrix(device);
+
+    // on update
+    this._updateCallbacks.forEach(cb => cb());
+    
+    // render
+    this._colorAttachments![0].view = ctx.getCurrentTexture().createView();
     const commandEncoder = device.createCommandEncoder();
     const passEncoder = commandEncoder?.beginRenderPass(this._renderPassDescriptor!);
-
     this._renderNode(this.scene, passEncoder);
-
     passEncoder.end();
     device.queue.submit([commandEncoder.finish()]);
   }

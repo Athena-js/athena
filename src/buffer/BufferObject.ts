@@ -84,4 +84,8 @@ export class BufferObject {
     );
   }
 
+  destroy() {
+    this._buffer?.destroy();
+  }
+
 }

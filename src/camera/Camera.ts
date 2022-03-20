@@ -45,6 +45,10 @@ export abstract class Camera {
     });
   }
 
+  destroy() {
+    this.uniform.destroy();
+  }
+
   abstract updateMatrix(device: GPUDevice): void;
 
 }

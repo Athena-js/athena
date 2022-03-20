@@ -56,6 +56,13 @@ export class BufferGeometry {
   get indexCount() {
     return this.index.data!.length;
   }
+
+  destroy() {
+    this.position.destroy()
+    this.uv.destroy();
+    this.normal.destroy();
+    this.index.destroy();
+  }
   
   attachVertexBuffer(device: GPUDevice, passEncoder: GPURenderPassEncoder) {
     this.position.attach(device, passEncoder);

@@ -19,6 +19,10 @@ export class ShaderMaterial {
 
   protected static _cachedShader = new Map<string, GPUShaderModule>();
 
+  static clearCache() {
+    ShaderMaterial._cachedShader.clear();
+  }
+
   constructor(props: ShaderMaterialProps) {
     this.name = props.name ?? 'ShaderMaterial';
     this.vertexShader = props.vertexShader;
@@ -38,6 +42,12 @@ export class ShaderMaterial {
       }),
       ...(props.uniforms ?? [])
     ];
+  }
+
+  destroy() {
+    this.uniformBuffers.forEach(buffer => {
+      buffer.destroy();
+    });
   }
 
   createShaderModule(device: GPUDevice, code: string) {

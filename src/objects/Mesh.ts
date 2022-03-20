@@ -19,4 +19,9 @@ export class Mesh extends SceneNode {
     this.material = props.material;
   }
 
+  destroy() {
+    this.geometry.destroy();
+    this.material.destroy();
+  }
+
 }

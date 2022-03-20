@@ -4,6 +4,7 @@ import { UniformBuffer } from "@/buffer/UniformBuffer";
 import $$ from '@/utils/constants';
 
 import type { Camera } from "@/camera/Camera";
+import { Mesh } from "@gltf-transform/core";
 
 export class SceneNode {
 
@@ -42,9 +43,20 @@ export class SceneNode {
     this.uniform = new UniformBuffer($$.Builtins.Uniform.TransformUniform);
   }
 
+  destory(node = this) {
+    node.uniform.destroy();
+    for (const child of node.children) {
+      if (child instanceof Mesh) {
+        child.uniform.destroy();
+        child.destory();
+      }
+    }
+  }
+
   add(node: SceneNode) {
     this.children.push(node);
     node.setParent(this);
+    return node;
   }
 
   setParent(node: SceneNode) {
