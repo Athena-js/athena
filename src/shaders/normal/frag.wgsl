@@ -8,6 +8,7 @@ fn main(
   @location(0) position: f4,
   @location(1) uv: f2,
   @location(2) normal: f3,
+  @location(3) color: f3,
 ) -> @location(0) vec4<f32> {
   return vec4(normal * 0.5 + 0.5, 1.0);
 }

@@ -1,10 +1,7 @@
-import { UniformBuffer } from "@/buffer/UniformBuffer";
-
 interface ShaderMaterialProps {
   name?: string;
   vertexShader: string;
   fragmentShader: string;
-  uniforms?: UniformBuffer[];
 }
 
 export class ShaderMaterial {
@@ -12,7 +9,6 @@ export class ShaderMaterial {
 
   readonly vertexShader: string;
   readonly fragmentShader: string;
-  readonly uniformBuffers: UniformBuffer[];
 
   protected _vertexShaderModule?: GPUShaderModule;
   protected _fragmentShaderModule?: GPUShaderModule;
@@ -27,27 +23,11 @@ export class ShaderMaterial {
     this.name = props.name ?? 'ShaderMaterial';
     this.vertexShader = props.vertexShader;
     this.fragmentShader = props.fragmentShader;
-
-    this.uniformBuffers = [
-      new UniformBuffer({
-        binding: 0,
-        name: 'transform',
-        items: [
-          { name: 'ModelMatrix', size: 4 * 16 },
-          { name: 'ViewMatrix', size: 4 * 16 },
-          { name: 'ModelViewMatrix', size: 4 * 16 },
-          { name: 'ProjectionMatrix', size: 4 * 16 },
-          { name: 'NormalMatrix', size: 4 * 16 },
-        ]
-      }),
-      ...(props.uniforms ?? [])
-    ];
   }
 
   destroy() {
-    this.uniformBuffers.forEach(buffer => {
-      buffer.destroy();
-    });
+    this._vertexShaderModule = undefined;
+    this._fragmentShaderModule = undefined;
   }
 
   createShaderModule(device: GPUDevice, code: string) {
@@ -73,8 +53,12 @@ export class ShaderMaterial {
     return this._fragmentShaderModule;
   }
 
-  get uTransform() {
-    return this.uniformBuffers[0];
+  getLayoutEntries(): GPUBindGroupLayoutEntry[] {
+    return [];
+  }
+
+  getBindGroup(device: GPUDevice, layout: GPUBindGroupLayout): GPUBindGroup {
+    return device.createBindGroup({ layout, entries: [] });
   }
 
 }

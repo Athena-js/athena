@@ -22,7 +22,7 @@ export class SceneNode {
 
   readonly uniform: UniformBuffer;
 
-  matrixNeedsUpdate: boolean;
+  matrixNeedsUpdate = true;
 
   constructor(name?: string) {
     this.name = name ?? ''; 
@@ -32,7 +32,6 @@ export class SceneNode {
     this.scale = Vector3.one();
     this.localMatrix = new Matrix4();
     this.worldMatrix = new Matrix4();
-    this.matrixNeedsUpdate = true;
 
     [
       this.position,

@@ -6,7 +6,7 @@ interface UniformItem {
   offset?: number;
 }
 
-export interface UniformBufferProps {
+interface UniformBufferProps {
   binding: number;
   items: UniformItem[];
   name?: string;

@@ -2,6 +2,7 @@ import { Mesh } from '@/objects/Mesh';
 import { Camera } from '@/camera/Camera';
 import { Vector2 } from '@/math/Vector';
 import { SceneNode } from '@/objects/SceneNode';
+import { TextureObject } from '@/buffer/TextureObject';
 import { PerspectiveCamera } from '@/camera/PerspectiveCamera';
 import { ShaderMaterial } from '@/material/ShaderMaterial';
 import { LoadingPage } from '@/ui/LoadingPage';
@@ -43,8 +44,8 @@ export class Renderer {
   presentationFormat: GPUTextureFormat = 'bgra8unorm';
   
   // textures
-  protected _renderTarget?: GPUTexture;
-  protected _depthTexture?: GPUTexture;
+  // protected _renderTarget = new TextureObject();
+  protected _depthTexture = new TextureObject();
 
   // render pass configuration
   protected _renderPassDescriptor?: GPURenderPassDescriptor;
@@ -70,7 +71,6 @@ export class Renderer {
       this.gpu = gpu;
       this.gpuChecking = false
       this.presentationFormat = this.gpu.preferredFormat;
-      this._loadigPage.hide();
       return gpu;
     }, (err) => {
       console.warn(err);
@@ -90,12 +90,11 @@ export class Renderer {
   }
 
   destroy() {
-    
     this._loadigPage.destroy();
     ShaderMaterial.clearCache();
     this.scene.destroy();
     this.camera.destroy();
-    this._renderTarget?.destroy();
+    // this._renderTarget?.destroy();
     this._depthTexture?.destroy();
   }
 
@@ -107,8 +106,12 @@ export class Renderer {
   render() {
     // waiting for webgpu device
     if (this.gpuChecking) return;
-
     const { device, ctx } = this.gpu!;
+
+    // hide loading page
+    if (this._loadigPage.active) {
+      this._loadigPage.hide();
+    }
 
     // resize canvas
     this._handleResize();
@@ -155,15 +158,16 @@ export class Renderer {
 
     if (!renderPipeline) {
       const bindGroupLayoutEntry = uniforms.map(u => u.layoutEntry);
-
+      
       // create render pipeline
       renderPipeline = new RenderPipeline(gpu, {
-        bindGroupLayouts: [bindGroupLayoutEntry],
+        bindGroupLayouts: [bindGroupLayoutEntry,material.getLayoutEntries()],
         vertexBufferLayouts: geometry.vertexBufferLayouts,
         vertexShaderModule: material.getVertexShaderModule(device),
         fragmentShaderModule: material.getFragmentShaderModule(device),
         presentationFormat: presentationFormat,
       });
+
       this._cachedPipline.set(material, renderPipeline);
     }
 
@@ -172,8 +176,14 @@ export class Renderer {
       entries: uniforms.map(u => u.getBindGroupEntry(device)),
     });
 
+    const materialBindGroup = material.getBindGroup(
+      device,
+      renderPipeline.pipeline.getBindGroupLayout(1)
+    );
+
     passEncoder.setPipeline(renderPipeline.pipeline);
     passEncoder.setBindGroup(0, bindGroup);
+    passEncoder.setBindGroup(1, materialBindGroup);
     geometry.attachVertexBuffer(device, passEncoder);
     geometry.attachIndexBuffer(device, passEncoder);
     passEncoder.drawIndexed(geometry.indexCount);
@@ -203,16 +213,16 @@ export class Renderer {
       });
 
       // update render target
-      this._renderTarget?.destroy();
-      this._renderTarget = device.createTexture({
-        size: this.presentationSize.toArray(),
-        sampleCount: this.sampleCount,
-        format: this.presentationFormat,
-        usage: GPUTextureUsage.RENDER_ATTACHMENT,
-      });
+      // this._renderTarget?.destroy();
+      // this._renderTarget.createNew(device, {
+      //   size: this.presentationSize.toArray(),
+      //   sampleCount: this.sampleCount,
+      //   format: this.presentationFormat,
+      //   usage: GPUTextureUsage.RENDER_ATTACHMENT,
+      // });
 
       this._colorAttachments = [{
-        view: this._renderTarget.createView(),
+        view: undefined as any,
         storeOp: 'store',
         loadOp: 'clear',
         clearValue: { r: 0.1, g: 0.1, b: 0.1, a: 1.0 },
@@ -220,7 +230,7 @@ export class Renderer {
 
       // update depth texture
       this._depthTexture?.destroy();
-      this._depthTexture = device.createTexture({
+      this._depthTexture.getTexture(device, true, {
         size: this.presentationSize.toArray(),
         format: 'depth24plus',
         usage: GPUTextureUsage.RENDER_ATTACHMENT,
@@ -229,7 +239,7 @@ export class Renderer {
       this._renderPassDescriptor = {
         colorAttachments: this._colorAttachments,
         depthStencilAttachment: {
-          view: this._depthTexture.createView(),
+          view: this._depthTexture.getView(device),
           depthLoadOp: 'clear',
           depthClearValue: 1.0,
           depthStoreOp: 'store'

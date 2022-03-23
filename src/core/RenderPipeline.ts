@@ -22,7 +22,6 @@ export class RenderPipeline {
   protected _fragmentState?: GPUFragmentState;
 
   protected _bindGroupLayoutEntries?: GPUBindGroupLayoutEntry[][];
-  protected _bindGroupLayouts?: GPUBindGroupLayout[];
   protected _vertexBufferLayouts: GPUVertexBufferLayout[];
 
   protected _premitive: GPUPrimitiveState;

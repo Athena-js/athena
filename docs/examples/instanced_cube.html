@@ -25,15 +25,15 @@
         const scene = new Athena.SceneNode();
 
         const cubes = [];
-        const random = () => (Math.random() - 0.5) * 20;
+        const random = (m, n = 0) => (Math.random() - n) * m;
 
         for (let x = 0; x < CUBE_COUNT; x++) {
           const cube = new Athena.Mesh({
             geometry: new Athena.CubeGeometry(),
             material: new Athena.NormalMaterial()
           });
-          cube.position.set(random(), random(), random());
-          cube.rotation.set(random(), random(), random());
+          cube.position.set(random(20, 0.5), random(20, 0.5), random(20, 0.5));
+          cube.rotation.set(random(360), random(360), random(360));
           scene.add(cube);
           cubes.push(cube);
         }

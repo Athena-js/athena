@@ -12,23 +12,19 @@
     <script src="../dist/index.js"></script>
     <script>
       const canvas = document.getElementById('canvas');
+      const scene = new Athena.SceneNode();
+      const camera = new Athena.PerspectiveCamera({
+        position: new Athena.Vector3(3, 0.5, 3),
+        lookAt: new Athena.Vector3(0, 0, 0),
+        fov: 45,
+        near: 0.25,
+        far: 20
+      });
+      const renderer = new Athena.Renderer({ canvas, scene, camera });
 
       (async () => {
-        const camera = new Athena.PerspectiveCamera({
-          position: new Athena.Vector3(-1.8, 0.6, 2.7),
-          lookAt: new Athena.Vector3(0, 0, -0.2),
-          fov: 45,
-          near: 0.25,
-          far: 20
-        });
-
-        const scene = new Athena.SceneNode();
-
-        const loader = new Athena.GLTFLoader();
-        const mesh = await loader.loadAsync('../assets/models/gltf/DamagedHelmet.glb');
+        const mesh = await new Athena.GLTFLoader().loadAsync('../assets/models/gltf/DamagedHelmet.glb');
         scene.add(mesh);
-
-        const renderer = new Athena.Renderer({ canvas, scene, camera });
 
         const render = () => {
           requestAnimationFrame(render);

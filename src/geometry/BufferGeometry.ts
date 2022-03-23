@@ -4,9 +4,10 @@ import { Vector3 } from "@/math/Vector";
 
 interface BufferGeometryProps {
   position: Float32Array;
-  uv: Float32Array;
-  index: Uint16Array;
+  uv?: Float32Array;
   normal?: Float32Array;
+  color?: Float32Array;
+  index: Uint16Array;
 }
 
 export class BufferGeometry {
@@ -14,6 +15,7 @@ export class BufferGeometry {
   readonly position: VertexBuffer;
   readonly uv: VertexBuffer;
   readonly normal: VertexBuffer;
+  readonly color: VertexBuffer;
   readonly index: IndexBuffer;
   readonly vertexBufferLayouts: GPUVertexBufferLayout[];
 
@@ -31,7 +33,15 @@ export class BufferGeometry {
       location: 1,
       strideLength: 2,
       format: 'float32x2',
-      data: props.uv
+      data: props.uv ?? new Float32Array()
+    });
+
+    this.color = new VertexBuffer({
+      name: 'normal',
+      location: 3,
+      strideLength: 3,
+      format: 'float32x3',
+      data: props.color ?? new Float32Array()
     });
 
     this.index = new IndexBuffer({
@@ -49,7 +59,8 @@ export class BufferGeometry {
     this.vertexBufferLayouts = [
       this.position,
       this.uv,
-      this.normal
+      this.normal,
+      this.color,
     ].map(buffer => buffer.bufferLayout);
   }
 
@@ -61,6 +72,7 @@ export class BufferGeometry {
     this.position.destroy()
     this.uv.destroy();
     this.normal.destroy();
+    this.color.destroy();
     this.index.destroy();
   }
   
@@ -68,6 +80,7 @@ export class BufferGeometry {
     this.position.attach(device, passEncoder);
     this.uv.attach(device, passEncoder);
     this.normal.attach(device, passEncoder);
+    this.color.attach(device, passEncoder);
   }
 
   attachIndexBuffer(device: GPUDevice, passEncoder: GPURenderPassEncoder) {

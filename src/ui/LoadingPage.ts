@@ -25,7 +25,7 @@ export class LoadingPage {
       <div style="height:100%; display:flex; justify-content:center; align-items:center;">
         <img
           class="animate__animated animate__bounceIn"
-          style="width:300px; --animate-duration: 1s; animation-delay: 0.1s;"
+          style="width:300px; --animate-duration: 1s; animation-delay: 0.1s; opacity:0;"
           src="${logoImage}"
         />
         <div style="position:absolute; bottom:40px; width: 80%; text-align: center; line-height: 24px; color: #fff; font-family: Menlo, Monaco, 'Courier New', monospace">

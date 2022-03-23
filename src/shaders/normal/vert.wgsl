@@ -27,18 +27,21 @@ struct VertexOutput {
   @location(0) position: f4;
   @location(1) uv: f2;
   @location(2) normal: f3;
+  @location(3) color: f3;
 };
 
 @stage(vertex)
 fn main(
   @location(0) position: f3,
   @location(1) uv: f2,
-  @location(2) normal: f3
+  @location(2) normal: f3,
+  @location(3) color: f3
 ) -> VertexOutput {
   var output: VertexOutput;
   output.fragPosition = camera.ProjectionMatrix * transform.ModelViewMatrix * f4(position, 1.0);
   output.position = f4(position, 1.0);
   output.uv = uv;
   output.normal = normal;
+  output.color = color;
   return output;
 }

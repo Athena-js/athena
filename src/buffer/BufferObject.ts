@@ -86,6 +86,7 @@ export class BufferObject {
 
   destroy() {
     this._buffer?.destroy();
+    this._buffer = undefined;
   }
 
 }

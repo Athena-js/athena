@@ -20,6 +20,7 @@ export * from '@/geometry/CubeGeometry';
 
 export * from '@/material/ShaderMaterial';
 export * from '@/material/NormalMaterial';
+export * from '@/material/PhysicalMaterial';
 
 export * from '@/utils/constants';
 export * from '@/utils/error';
