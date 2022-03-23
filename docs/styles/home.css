@@ -4,17 +4,19 @@
   height: 100%;
   box-sizing: border-box;
   user-select: none;
+  overflow: hidden;
 }
 
 .container .left-panel {
   height: 100%;
   flex: 0 0 300px;
   border-right: 3px solid var(--primary-1);
+  overflow: hidden;
 }
 
 .container iframe {
   width: 100%;
-  pointer-events: none;
+  overflow: hidden;
 }
 
 .title-wrapper {

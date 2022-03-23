@@ -62,8 +62,8 @@ export class Matrix4 {
     return this;
   }
 
-  rotate(angle: number, axis: Vector3) {
-    mat4.rotate(this._array, this._array, angle, axis.toArray());
+  rotate(radians: number, axis: Vector3) {
+    mat4.rotate(this._array, this._array, radians, axis.toArray());
     return this;
   }
 

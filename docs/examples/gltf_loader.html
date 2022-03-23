@@ -14,12 +14,13 @@
       const canvas = document.getElementById('canvas');
       const scene = new Athena.SceneNode();
       const camera = new Athena.PerspectiveCamera({
-        position: new Athena.Vector3(3, 0.5, 3),
-        lookAt: new Athena.Vector3(0, 0, 0),
+        position: new Athena.Vector3(-1.8, 0.6, 2.73),
+        lookAt: new Athena.Vector3(0.04, 0, 0),
         fov: 45,
         near: 0.25,
         far: 20
       });
+      const controls = new Athena.OrbitControl(camera, canvas);
       const renderer = new Athena.Renderer({ canvas, scene, camera });
 
       (async () => {
@@ -28,8 +29,8 @@
 
         const render = () => {
           requestAnimationFrame(render);
+          controls.update();
           renderer.render();
-          scene.rotation.y = Date.now() / 1000;
         };
 
         render();

@@ -12,8 +12,8 @@ import { FrameController } from './FrameController'
 
 interface RendererProps {
   canvas: HTMLCanvasElement;
-  scene: SceneNode;
   camera: Camera;
+  scene?: SceneNode;
 }
 
 export class Renderer {
@@ -44,7 +44,6 @@ export class Renderer {
   presentationFormat: GPUTextureFormat = 'bgra8unorm';
   
   // textures
-  // protected _renderTarget = new TextureObject();
   protected _depthTexture = new TextureObject();
 
   // render pass configuration
@@ -62,9 +61,14 @@ export class Renderer {
 
   constructor(props: RendererProps) {
     this.canvas = props.canvas;
-    this.scene = props.scene;
+    this.scene = props.scene ?? new SceneNode();
     this.camera = props.camera;
     
+    // prohibit default mouse event
+    this.canvas.oncontextmenu = () => false;
+    this.canvas.onwheel = () => false;
+
+    // add loading page
     this._loadigPage = new LoadingPage(props.canvas);
 
     this.promise = checkGPU(this.canvas).then((gpu) => {
@@ -94,7 +98,6 @@ export class Renderer {
     ShaderMaterial.clearCache();
     this.scene.destroy();
     this.camera.destroy();
-    // this._renderTarget?.destroy();
     this._depthTexture?.destroy();
   }
 
@@ -211,15 +214,6 @@ export class Renderer {
         format: this.presentationFormat,
         size: this.presentationSize.toArray(),
       });
-
-      // update render target
-      // this._renderTarget?.destroy();
-      // this._renderTarget.createNew(device, {
-      //   size: this.presentationSize.toArray(),
-      //   sampleCount: this.sampleCount,
-      //   format: this.presentationFormat,
-      //   usage: GPUTextureUsage.RENDER_ATTACHMENT,
-      // });
 
       this._colorAttachments = [{
         view: undefined as any,

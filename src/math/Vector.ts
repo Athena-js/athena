@@ -117,6 +117,9 @@ export class Vector2 extends Vector<2> {
     super([x, y]);
   }
 
+  static one() { return new Vector2(1, 1); }
+  static zero() { return new Vector2(0, 0); }
+
   get x() { return this._get(0); }
   set x(v: number) { this._set(0, v); }
   get y() { return this._get(1); }

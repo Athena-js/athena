@@ -10,7 +10,7 @@ export class LoadingPage {
   constructor(canvas: HTMLCanvasElement) {
     this.addCSS('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
     this.domElement = this.createPage();
-    canvas.parentElement?.prepend(this.domElement);
+    canvas.parentElement?.prepend(this.domElement)
   }
 
   createPage() {
@@ -21,6 +21,8 @@ export class LoadingPage {
     div.style.top = '0';
     div.style.bottom = '0';
     div.style.backgroundColor = '#141414';
+    div.style.pointerEvents = 'none';
+    div.oncontextmenu = () => false;
     div.innerHTML = `
       <div style="height:100%; display:flex; justify-content:center; align-items:center;">
         <img

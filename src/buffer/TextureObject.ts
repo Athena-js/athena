@@ -97,11 +97,6 @@ export class TextureObject {
     desc?: GPUSamplerDescriptor
   ) {
     if (!this._sampler || forceUpdate) {
-      // desc = {
-      //   addressModeU: 'repeat',
-      //   addressModeV: 'repeat',
-      // }
-      console.log(this._descriptor?.sampler);
       desc && this.updateDescriptor({ sampler: desc });
       this._sampler = device.createSampler(this._descriptor?.sampler);
     }

@@ -5,6 +5,7 @@ export * from '@/buffer/UniformBuffer';
 
 export * from '@/camera/Camera';
 export * from '@/camera/PerspectiveCamera';
+export * from '@/camera/OrbitControl';
 
 export * from '@/core/GPUInstance';
 export * from '@/core/Renderer';

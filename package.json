@@ -1,6 +1,6 @@
 {
   "name": "athena3d",
-  "version": "0.0.5",
+  "version": "0.0.9",
   "description": "3D Framework based on WebGPU.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
