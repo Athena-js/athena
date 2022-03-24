@@ -10,9 +10,12 @@ export class ShaderMaterial {
   readonly vertexShader: string;
   readonly fragmentShader: string;
 
+  readonly cullMode: GPUCullMode = 'back';
+  readonly topology: GPUPrimitiveTopology = 'triangle-list';
+
   protected _vertexShaderModule?: GPUShaderModule;
   protected _fragmentShaderModule?: GPUShaderModule;
-
+  
   protected static _cachedShader = new Map<string, GPUShaderModule>();
 
   static clearCache() {

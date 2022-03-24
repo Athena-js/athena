@@ -16,9 +16,7 @@
       const camera = new Athena.PerspectiveCamera({
         position: new Athena.Vector3(-1.8, 0.6, 2.73),
         lookAt: new Athena.Vector3(0.04, 0, 0),
-        fov: 45,
-        near: 0.25,
-        far: 20
+        fov: 45
       });
       const controls = new Athena.OrbitControl(camera, canvas);
       const renderer = new Athena.Renderer({ canvas, scene, camera });
@@ -26,6 +24,10 @@
       (async () => {
         const mesh = await new Athena.GLTFLoader().loadAsync('../assets/models/gltf/DamagedHelmet.glb');
         scene.add(mesh);
+
+        const cubemap = await new Athena.TextureLoader().loadAsync('../assets/skybox/sunny.png');
+        const skybox = new Athena.Skybox(cubemap);
+        scene.add(skybox);
 
         const render = () => {
           requestAnimationFrame(render);

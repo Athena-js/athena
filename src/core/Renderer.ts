@@ -169,6 +169,10 @@ export class Renderer {
         vertexShaderModule: material.getVertexShaderModule(device),
         fragmentShaderModule: material.getFragmentShaderModule(device),
         presentationFormat: presentationFormat,
+        premitive: {
+          cullMode: material.cullMode,
+          topology: material.topology,
+        }
       });
 
       this._cachedPipline.set(material, renderPipeline);
@@ -213,6 +217,7 @@ export class Renderer {
         device,
         format: this.presentationFormat,
         size: this.presentationSize.toArray(),
+        compositingAlphaMode: 'opaque'
       });
 
       this._colorAttachments = [{
