@@ -31,7 +31,7 @@ export class LoadingPage {
           src="${logoImage}"
         />
         <div style="position:absolute; bottom:40px; width: 80%; text-align: center; line-height: 24px; color: #fff; font-family: Menlo, Monaco, 'Courier New', monospace">
-          <div id="athena-message"></div>
+          <div id="athena-message">[ LOADING ... ]</div>
         </div>
       </div>`;
     this.messageElement = div.querySelector('#athena-message')!;

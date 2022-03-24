@@ -52,10 +52,10 @@ export class OrbitControl {
         currentPos.set(ev.x, ev.y);
         deltaPos.set(currentPos.x - startPos.x, currentPos.y - startPos.y);
         startPos.copy(currentPos);
-        deltaPos.div(new Vector2(this.canvas.width, this.canvas.height));
+        deltaPos.div(new Vector2(this.canvas.clientWidth, this.canvas.clientHeight));
 
-        this._azimuthAngle -= deltaPos.x  * this.rotateAzimuthFactor * 2 * Math.PI;
-        this._polarAngle -= deltaPos.y * this.rotatePolarFactor * 2 * Math.PI;
+        this._azimuthAngle -= deltaPos.x  * this.rotateAzimuthFactor * Math.PI;
+        this._polarAngle -= deltaPos.y * this.rotatePolarFactor * Math.PI;
         this._polarAngle = Math.min(Math.max(this._polarAngle, 0.1), Math.PI - 0.1);
       }
     }
