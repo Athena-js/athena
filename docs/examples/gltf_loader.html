@@ -25,17 +25,15 @@
         const mesh = await new Athena.GLTFLoader().loadAsync('../assets/models/gltf/DamagedHelmet.glb');
         scene.add(mesh);
 
-        const cubemap = await new Athena.TextureLoader().loadAsync('../assets/skybox/sunny.png');
-        const skybox = new Athena.Skybox(cubemap);
-        scene.add(skybox);
+        // const cubemap = await new Athena.TextureLoader().loadAsync('../assets/skybox/right.png');
+        // const skybox = new Athena.Skybox(cubemap);
+        // scene.add(skybox);
 
-        const render = () => {
-          requestAnimationFrame(render);
+        renderer.onUpdate(() => {
           controls.update();
-          renderer.render();
-        };
+        })
 
-        render();
+        renderer.start();
       })();
     </script>
   </body>

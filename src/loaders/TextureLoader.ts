@@ -3,11 +3,11 @@ import { BaseLoader } from "./BaseLoader";
 
 export class TextureLoader extends BaseLoader {
 
-  async loadAsync(url: string) {
+  async loadAsync(url: string): Promise<TextureObject> {
     const img = await this.getImage(url);
     const texture = new TextureObject({
       texture: {
-        size: [img.width, img.height, 1],
+        size: [2048, 2048, 6],
         format: 'rgba8unorm',
         usage:
           GPUTextureUsage.TEXTURE_BINDING |

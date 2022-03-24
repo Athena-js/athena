@@ -8,6 +8,7 @@ export class SkyboxMaterial extends ShaderMaterial {
   texture: TextureObject;
 
   readonly cullMode: GPUCullMode = 'front';
+  readonly depthWrite: boolean = false;
 
   protected _bindGroup?: GPUBindGroup;
 
@@ -19,6 +20,11 @@ export class SkyboxMaterial extends ShaderMaterial {
     });
 
     this.texture = texture;
+    texture.updateDescriptor({
+      view: {
+        dimension: 'cube'
+      }
+    })
   }
 
   override getLayoutEntries(): GPUBindGroupLayoutEntry[] {
@@ -27,14 +33,15 @@ export class SkyboxMaterial extends ShaderMaterial {
         binding: 0,
         visibility: GPUShaderStage.FRAGMENT,
         texture: {
-          sampleType: 'float'
+          sampleType: 'float',
+          viewDimension: 'cube',
         }
       },
       {
         binding: 1,
         visibility: GPUShaderStage.FRAGMENT,
         sampler: {
-          type: 'filtering'
+          type: 'filtering',
         }
       }
     ]

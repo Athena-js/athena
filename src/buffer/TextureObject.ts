@@ -9,8 +9,8 @@ export class TextureObject {
   protected _descriptor?: DescriptorType;
   protected _texture?: GPUTexture;
   protected _view?: GPUTextureView;
-  protected _image?: ImageBitmap;
   protected _sampler?: GPUSampler;
+  protected _images: ImageBitmap[] = [];
 
   protected _loaded = false;
 
@@ -39,26 +39,20 @@ export class TextureObject {
     return this;
   }
 
-  async setImageAsync(
-    image: ImageBitmapSource,
-    options?: ImageBitmapOptions,
-    offset?: {sx: number, sy: number, sw: number, sh: number}
-  ) {
-    const promise = offset
-      ? createImageBitmap(image, offset.sx, offset.sy, offset.sw, offset.sh, options)
-      : createImageBitmap(image, options);
-    this._image = await promise;
+  async setImageAsync(image: ImageBitmapSource | ImageBitmapSource[], options?: ImageBitmapOptions) {
+    const images = Array.isArray(image) ? image : [image];
+    this._images = await Promise.all(images.map(img => createImageBitmap(img, options)));
     this._loaded = false;
     return this;
   }
 
   updateBuffer(device: GPUDevice) {
-    if (!this._loaded && this._image) {
+    if (!this._loaded && this._images) {
       const texture = this.getTexture(device);
       device.queue.copyExternalImageToTexture(
-        { source: this._image },
+        { source: this._images[0] },
         { texture },
-        [ this._image.width, this._image.height ]
+        [ this._images[0].width, this._images[0].height ]
       );
       this._loaded = true;
     }
@@ -86,6 +80,7 @@ export class TextureObject {
   ) {
     if (!this._view || forceUpdate) {
       this.updateDescriptor({ view: desc });
+      console.log(this._descriptor?.view);
       this._view = this.getTexture(device).createView(this._descriptor?.view);
     }
     return this._view;

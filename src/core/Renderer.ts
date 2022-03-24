@@ -128,25 +128,23 @@ export class Renderer {
     // render
     this._colorAttachments![0].view = ctx.getCurrentTexture().createView();
     const commandEncoder = device.createCommandEncoder();
-    const passEncoder = commandEncoder?.beginRenderPass(this._renderPassDescriptor!);
-    this._renderNode(this.scene, passEncoder);
-    passEncoder.end();
+    this._renderNode(this.scene, commandEncoder);
     device.queue.submit([commandEncoder.finish()]);
   }
 
-  protected _renderNode(node: SceneNode, passEncoder: GPURenderPassEncoder) {
+  protected _renderNode(node: SceneNode, commandEncoder: GPUCommandEncoder) {
     node.updateMatrix();
 
     if (node instanceof Mesh) {
-      this._renderMesh(node, passEncoder);
+      this._renderMesh(node, commandEncoder);
     }
 
     for (const child of node.children) {
-      this._renderNode(child, passEncoder);
+      this._renderNode(child, commandEncoder);
     }
   }
 
-  protected _renderMesh(node: Mesh, passEncoder: GPURenderPassEncoder) {
+  protected _renderMesh(node: Mesh, commandEncoder: GPUCommandEncoder) {
     const gpu = this.gpu!;
     const { device } = gpu;
     const { geometry, material } = node;
@@ -187,13 +185,14 @@ export class Renderer {
       device,
       renderPipeline.pipeline.getBindGroupLayout(1)
     );
-
+    const passEncoder = commandEncoder?.beginRenderPass(this._renderPassDescriptor!);
     passEncoder.setPipeline(renderPipeline.pipeline);
     passEncoder.setBindGroup(0, bindGroup);
     passEncoder.setBindGroup(1, materialBindGroup);
     geometry.attachVertexBuffer(device, passEncoder);
     geometry.attachIndexBuffer(device, passEncoder);
     passEncoder.drawIndexed(geometry.indexCount);
+    passEncoder.end();
   }
 
   protected _handleResize(force = false) {
@@ -222,9 +221,9 @@ export class Renderer {
 
       this._colorAttachments = [{
         view: undefined as any,
-        storeOp: 'store',
         loadOp: 'clear',
         clearValue: { r: 0.1, g: 0.1, b: 0.1, a: 1.0 },
+        storeOp: 'store',
       }];
 
       // update depth texture

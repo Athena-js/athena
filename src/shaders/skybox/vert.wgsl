@@ -44,7 +44,7 @@ fn main(
   viewMatrix[3][2] = 0.0;
 
   output.fragPosition = camera.ProjectionMatrix * viewMatrix * transform.ModelMatrix * f4(position, 1.0);
-  output.fragPosition.z = 0.0;
+  // output.fragPosition.z = 1.0;
   output.position = f4(position, 1.0);
   output.uv = uv;
   output.normal = normal;
