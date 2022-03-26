@@ -62,7 +62,7 @@ export class RenderPipeline {
     this._vertexState = {
       module: this._vertexShaderModule,
       buffers: this._vertexBufferLayouts,
-      entryPoint: 'main',
+      entryPoint: 'main'
     }
 
     if (this._fragmentShaderModule && this._presentationFormat) {

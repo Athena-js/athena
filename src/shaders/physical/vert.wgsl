@@ -1,4 +1,5 @@
 type m4 = mat4x4<f32>;
+type m3 = mat3x3<f32>;
 type f2 = vec2<f32>;
 type f3 = vec3<f32>;
 type f4 = vec4<f32>;
@@ -24,10 +25,11 @@ var<uniform> transform: TransformUniform;
 
 struct VertexOutput {
   @builtin(position) fragPosition: f4;
-  @location(0) position: f4;
-  @location(1) uv: f2;
-  @location(2) normal: f3;
-  @location(3) color: f3;
+  @location(0) position: f3;
+  @location(1) viewPosition: f3;
+  @location(2) uv: f2;
+  @location(3) normal: f3;
+  @location(4) color: f3;
 };
 
 @stage(vertex)
@@ -38,10 +40,13 @@ fn main(
   @location(3) color: f3
 ) -> VertexOutput {
   var output: VertexOutput;
-  output.fragPosition = camera.ProjectionMatrix * transform.ModelViewMatrix * f4(position, 1.0);
-  output.position = f4(position, 1.0);
+  var viewPosition: f4 = camera.ViewMatrix * transform.ModelMatrix * f4(position, 1.0);
+
+  output.position = position;
+  output.viewPosition = viewPosition.xyz;
   output.uv = uv;
   output.normal = normal;
   output.color = color;
+  output.fragPosition = camera.ProjectionMatrix * viewPosition;
   return output;
 }

@@ -1,16 +1,18 @@
-import { Matrix4 } from "@/math/Matrix";
+import { Matrix3, Matrix4 } from "@/math/Matrix";
 import { Vector3 } from "@/math/Vector";
 import { UniformBuffer } from "@/buffer/UniformBuffer";
+import { TextureObject } from "@/buffer/TextureObject";
+import { Camera } from "@/camera/Camera";
+import { Mesh } from "./Mesh";
 import $$ from '@/utils/constants';
 
-import type { Camera } from "@/camera/Camera";
-import { Mesh } from "@gltf-transform/core";
+const GPUTextureUsage = window.GPUTextureUsage ?? {};
 
 export class SceneNode {
 
   name: string;
-
   parent?: SceneNode;
+
   readonly children: SceneNode[];
 
   readonly position: Vector3;
@@ -21,6 +23,21 @@ export class SceneNode {
   readonly worldMatrix: Matrix4;
 
   readonly uniform: UniformBuffer;
+
+  // cube texture
+  cubemap: TextureObject = new TextureObject({
+    texture: {
+      size: [1, 1, 6],
+      format: 'rgba8unorm',
+      usage:
+        GPUTextureUsage.TEXTURE_BINDING |
+        GPUTextureUsage.COPY_DST |
+        GPUTextureUsage.RENDER_ATTACHMENT
+    },
+    view: {
+      dimension: 'cube'
+    }
+  });
 
   matrixNeedsUpdate = true;
 
@@ -52,7 +69,7 @@ export class SceneNode {
     }
   }
 
-  add(node: SceneNode) {
+  add(node: SceneNode): SceneNode {
     this.children.push(node);
     node.setParent(this);
     return node;
@@ -87,7 +104,7 @@ export class SceneNode {
   updateUniform(device: GPUDevice, camera: Camera) {
     const modelMatrix = this.worldMatrix;
     const modelViewMatrix = modelMatrix.clone().mulLeft(camera.viewMatrix);
-    const normalViewMatrix = modelViewMatrix.clone().invert().transpose();
+    const normalViewMatrix = new Matrix3().fromMat4(modelViewMatrix.clone().invert().transpose());
     this.uniform.set(device, $$.Builtins.Matrix.ModelMatrix.name, modelMatrix.buffer);
     this.uniform.set(device, $$.Builtins.Matrix.ModelViewMatrix.name, modelViewMatrix.buffer);
     this.uniform.set(device, $$.Builtins.Matrix.NormalMatrix.name, normalViewMatrix.buffer);

@@ -9,15 +9,28 @@ import { TextureObject } from '@/buffer/TextureObject';
 
 const io = new GT.WebIO({ credentials: 'include' });
 
+const GPUTextureUsage = window.GPUTextureUsage ?? {};
+
 const GLTFWrapModeMapper: { [k: number]: GPUAddressMode } = {
   33071: 'clamp-to-edge',
   33648: 'mirror-repeat',
   10497: 'repeat'
 }
 
+const DefaultTexture = new TextureObject({
+  texture: {
+    size: [1, 1, 1],
+    format: 'rgba8unorm',
+    usage:
+      GPUTextureUsage.TEXTURE_BINDING |
+      GPUTextureUsage.COPY_DST |
+      GPUTextureUsage.RENDER_ATTACHMENT
+  }
+});
+
 export class GLTFLoader extends BaseLoader {
 
-  _cachedTextures: WeakMap<GT.Texture, TextureObject> = new Map();
+  protected _cachedTextures: WeakMap<GT.Texture, TextureObject> = new Map();
 
   async loadAsync(url: string): Promise<SceneNode> {
     const doc = await io.read(url);
@@ -114,18 +127,52 @@ export class GLTFLoader extends BaseLoader {
     const premitive = _mesh.listPrimitives()[0];
     const _mat = premitive.getMaterial()!;
 
-    const baseColorTexture = this._cachedTextures.get(_mat.getBaseColorTexture()!)!;
-    const baseColorTextureInfo = _mat.getBaseColorTextureInfo()!;
+    let baseColorTexture = DefaultTexture;
+    let normalTexture = DefaultTexture;
+    let metallicRoughnessTexture = DefaultTexture;
+    let emissiveTexture = DefaultTexture;
+    let aoTexture = DefaultTexture;
 
-    baseColorTexture.updateDescriptor({
-      sampler: {
-        addressModeU: GLTFWrapModeMapper[baseColorTextureInfo.getWrapS()],
-        addressModeV: GLTFWrapModeMapper[baseColorTextureInfo.getWrapT()],
-      }
-    });
+    const updateTextureInfo = (texture: TextureObject, info: GT.TextureInfo) => {
+      texture?.updateDescriptor({
+        sampler: {
+          addressModeU: GLTFWrapModeMapper[info.getWrapS()],
+          addressModeV: GLTFWrapModeMapper[info.getWrapT()],
+        }
+      });
+    }
+
+    if (_mat.getBaseColorTexture()) {
+      baseColorTexture = this._cachedTextures.get(_mat.getBaseColorTexture()!)!;
+      updateTextureInfo(baseColorTexture, _mat.getBaseColorTextureInfo()!);
+    }
+
+    if (_mat.getNormalTexture()) {
+      normalTexture = this._cachedTextures.get(_mat.getNormalTexture()!)!;
+      updateTextureInfo(normalTexture, _mat.getNormalTextureInfo()!);
+    }
+
+    if (_mat.getMetallicRoughnessTexture()) {
+      metallicRoughnessTexture = this._cachedTextures.get(_mat.getMetallicRoughnessTexture()!)!;
+      updateTextureInfo(metallicRoughnessTexture, _mat.getMetallicRoughnessTextureInfo()!);
+    }
+
+    if (_mat.getEmissiveTexture()) {
+      emissiveTexture = this._cachedTextures.get(_mat.getEmissiveTexture()!)!;
+      updateTextureInfo(emissiveTexture, _mat.getEmissiveTextureInfo()!);
+    }
+
+    if (_mat.getOcclusionTexture()) {
+      aoTexture = this._cachedTextures.get(_mat.getOcclusionTexture()!)!;
+      updateTextureInfo(aoTexture, _mat.getOcclusionTextureInfo()!);
+    }
 
     return new PhysicalMaterial({
-      baseColorTexture
+      baseColorTexture,
+      normalTexture,
+      metallicRoughnessTexture,
+      emissiveTexture,
+      aoTexture
     });
   }
 

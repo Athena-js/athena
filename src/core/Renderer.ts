@@ -10,6 +10,8 @@ import { GPUInstance, checkGPU } from './GPUInstance';
 import { RenderPipeline } from './RenderPipeline';
 import { FrameController } from './FrameController'
 
+const GPUTextureUsage = window.GPUTextureUsage ?? {};
+
 interface RendererProps {
   canvas: HTMLCanvasElement;
   camera: Camera;
@@ -29,12 +31,27 @@ export class Renderer {
   // frame controller
   controls = new FrameController(this.render.bind(this));
 
+  // cube texture
+  cubemap: TextureObject = new TextureObject({
+    texture: {
+      size: [1, 1, 6],
+      format: 'rgba8unorm',
+      usage:
+        GPUTextureUsage.TEXTURE_BINDING |
+        GPUTextureUsage.COPY_DST |
+        GPUTextureUsage.RENDER_ATTACHMENT
+    },
+    view: {
+      dimension: 'cube'
+    }
+  });
+
   // check webgpu support
   gpu?: GPUInstance;
   promise?: Promise<GPUInstance | any>;
   gpuChecking = true;
 
-  // msaa, must be 1 or 4
+  // TODO: msaa, must be 1 or 4
   sampleCount = 1;
 
   // resolution
@@ -185,7 +202,8 @@ export class Renderer {
 
     const materialBindGroup = material.getBindGroup(
       device,
-      renderPipeline.pipeline.getBindGroupLayout(1)
+      renderPipeline.pipeline.getBindGroupLayout(1),
+      this.cubemap
     );
 
     passEncoder.setPipeline(renderPipeline.pipeline);

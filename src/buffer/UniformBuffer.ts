@@ -74,7 +74,7 @@ export class UniformBuffer extends BufferObject {
   }
 
 
-  set(device: GPUDevice, name: string, data: TypedArray | ArrayBufferLike) {
+  set(device: GPUDevice, name: string, data: ArrayBufferLike) {
     if (this._offsetMap.has(name)) {
       this.writeBuffer(device, data, this._offsetMap.get(name));
     }

@@ -1,4 +1,4 @@
-import { mat4 } from "gl-matrix";
+import { mat4, mat3 } from "gl-matrix";
 import { Vector3 } from "./Vector";
 
 export class Matrix4 {
@@ -74,6 +74,63 @@ export class Matrix4 {
 
   clone() {
     return new Matrix4(new Float32Array(this._array));
+  }
+  
+}
+
+export class Matrix3 {
+
+  private _array: mat3;
+
+  constructor(value?: mat3) {
+    this._array = value ?? mat3.create();
+  }
+
+  get array() {
+    return this._array as Float32Array;
+  }
+
+  get buffer() {
+    return this.array.buffer;
+  }
+
+  identity() {
+    mat3.identity(this._array);
+    return this;
+  }
+
+  mulLeft(v: Matrix3) {
+    mat3.mul(this._array, v._array, this._array);
+    return this;
+  }
+
+  mulRight(v: Matrix3) {
+    mat3.mul(this._array, this._array, v._array);
+    return this;
+  }
+
+  invert() {
+    mat3.invert(this._array, this._array);
+    return this;
+  }
+
+  transpose() {
+    mat3.transpose(this._array, this._array);
+    return this;
+  }
+
+  copy(v: Matrix3) {
+    mat3.copy(this._array, v._array);
+    return this;
+  }
+
+  clone() {
+    return new Matrix3(new Float32Array(this._array));
+  }
+
+  fromMat4(v: Matrix4) {
+    mat3.fromMat4(this._array, v.array);
+    return this;
   }
   
 }

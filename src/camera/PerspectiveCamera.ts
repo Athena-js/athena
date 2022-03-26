@@ -33,17 +33,23 @@ export class PerspectiveCamera extends Camera {
 
   override updateMatrix(device: GPUDevice) {
     if (this.needsUpdateViewMatrix) {
-      this.needsUpdateViewMatrix = false;
       this.viewMatrix.lookAt(this.position, this.lookAt, this.up);
       this.uniform.set(
         device,
         Camera.UniformKeys.VIEW_MATRIX,
         this.viewMatrix.buffer
       );
+      const viewDir = this.lookAt.clone().sub(this.position).norminize();
+      const viewDirBuffer = new Float32Array(viewDir.toArray()).buffer;
+
+      this.uniform.set(
+        device,
+        Camera.UniformKeys.VIEW_DIR,
+        viewDirBuffer
+      )
     }
 
     if (this.needsUpdateProjectionMatrix) {
-      this.needsUpdateProjectionMatrix = false;
       this.projectionMatrix.perspective(
         this.fov * Math.PI / 180,
         this.aspect,
@@ -56,6 +62,19 @@ export class PerspectiveCamera extends Camera {
         this.projectionMatrix.buffer
       );
     }
+
+    if (this.needsUpdateViewMatrix || this.needsUpdateProjectionMatrix) {
+      const VPInvMatrix = this.projectionMatrix.clone().mulRight(this.viewMatrix).invert();
+      this.uniform.set(
+        device,
+        Camera.UniformKeys.VIEW_PROJECTION_INVERSE,
+        VPInvMatrix.buffer
+      )
+    }
+
+
+    this.needsUpdateViewMatrix = false;
+    this.needsUpdateProjectionMatrix = false;
   }
 
 }

@@ -9,7 +9,7 @@ export class TextureObject {
   protected _descriptor?: DescriptorType;
   protected _texture?: GPUTexture;
   protected _view?: GPUTextureView;
-  protected _image?: ImageBitmap;
+  protected _images?: ImageBitmap[];
   protected _sampler?: GPUSampler;
 
   protected _loaded = false;
@@ -47,19 +47,28 @@ export class TextureObject {
     const promise = offset
       ? createImageBitmap(image, offset.sx, offset.sy, offset.sw, offset.sh, options)
       : createImageBitmap(image, options);
-    this._image = await promise;
+    this._images = [await promise];
+    this._loaded = false;
+    return this;
+  }
+
+  async setImagesAsync(images: ImageBitmapSource[]) {
+    const promises = images.map(img => createImageBitmap(img));
+    this._images = await Promise.all(promises);
     this._loaded = false;
     return this;
   }
 
   updateBuffer(device: GPUDevice) {
-    if (!this._loaded && this._image) {
+    if (!this._loaded && this._images) {
       const texture = this.getTexture(device);
-      device.queue.copyExternalImageToTexture(
-        { source: this._image },
-        { texture },
-        [ this._image.width, this._image.height ]
-      );
+      this._images.forEach((img, i) => {
+        device.queue.copyExternalImageToTexture(
+          { source: img },
+          { texture, origin: [0, 0, i] },
+          [ img.width, img.height ]
+        );
+      });
       this._loaded = true;
     }
   }

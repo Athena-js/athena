@@ -12,7 +12,6 @@ export class ShaderMaterial {
 
   readonly cullMode: GPUCullMode = 'back';
   readonly topology: GPUPrimitiveTopology = 'triangle-list';
-  readonly depthWrite: boolean = false;
 
   protected _vertexShaderModule?: GPUShaderModule;
   protected _fragmentShaderModule?: GPUShaderModule;
@@ -61,7 +60,7 @@ export class ShaderMaterial {
     return [];
   }
 
-  getBindGroup(device: GPUDevice, layout: GPUBindGroupLayout): GPUBindGroup {
+  getBindGroup(device: GPUDevice, layout: GPUBindGroupLayout, ...props: any): GPUBindGroup {
     return device.createBindGroup({ layout, entries: [] });
   }
 

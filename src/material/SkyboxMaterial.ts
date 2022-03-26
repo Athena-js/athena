@@ -7,8 +7,7 @@ export class SkyboxMaterial extends ShaderMaterial {
 
   texture: TextureObject;
 
-  readonly cullMode: GPUCullMode = 'front';
-  readonly depthWrite = true;
+  // readonly cullMode: GPUCullMode = 'front';
 
   protected _bindGroup?: GPUBindGroup;
 
@@ -28,7 +27,8 @@ export class SkyboxMaterial extends ShaderMaterial {
         binding: 0,
         visibility: GPUShaderStage.FRAGMENT,
         texture: {
-          sampleType: 'float'
+          sampleType: 'float',
+          viewDimension: 'cube'
         }
       },
       {
