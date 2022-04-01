@@ -5,14 +5,14 @@ type f3 = vec3<f32>;
 type f4 = vec4<f32>;
 
 struct CameraUniform {
-  ViewMatrix: m4;
-  ProjectionMatrix: m4;
+  ViewMatrix: m4,
+  ProjectionMatrix: m4,
 };
 
 struct TransformUniform {
-  ModelMatrix: m4;
-  ModelViewMatrix: m4;
-  NormalMatrix: m4;
+  ModelMatrix: m4,
+  ModelViewMatrix: m4,
+  NormalMatrix: m4,
 };
 
 @group(0)
@@ -24,11 +24,11 @@ var<uniform> camera: CameraUniform;
 var<uniform> transform: TransformUniform;
 
 struct VertexOutput {
-  @builtin(position) fragPosition: f4;
-  @location(0) position: f4;
-  @location(1) uv: f2;
-  @location(2) normal: f3;
-  @location(3) color: f3;
+  @builtin(position) fragPosition: f4,
+  @location(0) position: f4,
+  @location(1) uv: f2,
+  @location(2) normal: f3,
+  @location(3) color: f3,
 };
 
 @stage(vertex)

@@ -7,21 +7,21 @@ type f4 = vec4<f32>;
 let PI: f32 = 3.14159626;
 
 let ambientLightColor: f3 = f3(1.0, 1.0, 1.0);
-let ambientLightIndensity: f32 = 0.5;
+let ambientLightIndensity: f32 = 0.8;
 let dictionalLightColor: f3 = f3(1.0, 1.0, 1.0);
 let dictionalLightIndensity: f32 = 4.0;
-let dictionalLightDir: f3 = f3(10.0, 1.0, 10.0);
+let dictionalLightDir: f3 = f3(5.0, 5.0, 5.0);
 
 struct CameraUniform {
-  ViewMatrix: m4;
-  ProjectionMatrix: m4;
-  ViewDir: f3;
+  ViewMatrix: m4,
+  ProjectionMatrix: m4,
+  CameraPos: f3,
 };
 
 struct TransformUniform {
-  ModelMatrix: m4;
-  ModelViewMatrix: m4;
-  NormalMatrix: m4;
+  ModelMatrix: m4,
+  ModelViewMatrix: m4,
+  NormalMatrix: m4,
 };
 
 @group(0)
@@ -52,12 +52,16 @@ fn calcTBN(N: f3, p: f3, uv: f2) -> m3 {
   return m3(normalize(T), normalize(B), N);
 }
 
-fn DistributionGGX(cosNH2: f32, roughness4: f32) -> f32 {
-  let denom: f32 = cosNH2 * (roughness4 - 1.0) + 1.0;
-  return roughness4 / (PI * denom * denom);
+fn DistributionBlinnPhong(cosNH: f32, m: f32) -> f32 {
+  return (m + 8.0) * pow(cosNH, m) / (8.0 * PI);
 }
 
-fn SchlickGGX(cosTheta: f32, k: f32) -> f32 {
+fn DistributionGGX(cosNH2: f32, roughness2: f32) -> f32 {
+  let t: f32 = cosNH2 * (roughness2 - 1.0) + 1.0;
+  return roughness2 / (PI * t * t);
+}
+
+fn GeometrySchlickGGX(cosTheta: f32, k: f32) -> f32 {
   let denom = cosTheta * (1.0 - k) + k;
   return cosTheta / denom;
 }
@@ -65,7 +69,7 @@ fn SchlickGGX(cosTheta: f32, k: f32) -> f32 {
 fn GeometrySmith(cosNL: f32, cosNV: f32, roughness: f32) -> f32 {
   let r: f32 = (roughness + 1.0);
   let k: f32 = r * r / 8.0;
-  return SchlickGGX(cosNL, k) * SchlickGGX(cosNV, k);
+  return GeometrySchlickGGX(cosNL, k) * GeometrySchlickGGX(cosNV, k);
 }
 
 fn fresnelSchlick(cosTheta: f32, F0: f3) -> f3 {
@@ -76,9 +80,10 @@ fn fresnelSchlick(cosTheta: f32, F0: f3) -> f3 {
 fn main(
   @location(0) position: f3,
   @location(1) viewPosition: f3,
-  @location(2) uv: f2,
-  @location(3) normal: f3,
-  @location(4) color: f3,
+  @location(2) worldPosition: f3,
+  @location(3) uv: f2,
+  @location(4) normal: f3,
+  @location(5) color: f3,
 ) -> @location(0) f4 {
 
   let texAbedo: f3 = textureSample(baseColorTexture, mySampler, uv).rgb;
@@ -88,13 +93,13 @@ fn main(
   let texAO: f3 = textureSample(aoTexture, mySampler, uv).rgb;
 
   let TBN: m3 = calcTBN(normalize(normal), -normalize(viewPosition), uv);
-  let ViewDir = normalize(camera.ViewDir);
-  
-  let N: f3 = normalize((transform.ModelMatrix * f4(normalize(TBN * texNormal), 1.0)).xyz);
-  let L: f3 = normalize(dictionalLightDir);
-  let H: f3 = normalize((L + ViewDir) / 2.0);
 
-  let irradiance: f3 = textureSample(envTexture, mySampler, reflect(camera.ViewDir, N)).rgb;
+  let N: f3 = normalize((transform.ModelMatrix * f4(normalize(TBN * texNormal), 1.0)).xyz);
+  let L: f3 = normalize(dictionalLightDir - worldPosition);
+  let V = normalize(camera.CameraPos - worldPosition);
+  let H: f3 = normalize(L + V);
+
+  let radiance: f3 = textureSample(envTexture, mySampler, reflect(-V, N)).rgb;
   let diffuse = dictionalLightColor * dictionalLightIndensity * texAbedo;
   
   let roughness: f32 = texMetallicRoughness.g;
@@ -103,27 +108,49 @@ fn main(
   let metallic: f32 = texMetallicRoughness.b;
 
   // calc angles
-  let cosNV: f32 = max(dot(N, ViewDir), 0.0);
+  let cosNV: f32 = max(dot(N, V), 0.0);
   let cosNL: f32 = max(dot(N, L), 0.0);
   let cosNH: f32 = max(dot(N, H), 0.0);
   let cosNH2: f32 = cosNH * cosNH;
 
   // calc brdf
-  let V: f32 = GeometrySmith(cosNL, cosNV, roughness4);
   let D: f32 = DistributionGGX(cosNH2, roughness2);
+  // let D: f32 = DistributionBlinnPhong(cosNH, 16.0);
   let F0: f3 = mix(f3(0.04), texAbedo, metallic);
   let F: f3 = fresnelSchlick(cosNL, F0);
+  let G: f32 = GeometrySmith(cosNL, cosNV, roughness4);
 
-  let kS: f3 = F0;
-  let kD: f3 = (1.0 - F0) * (1.0 - metallic);
+  let kS: f3 = F;
+  let kD: f3 = (1.0 - kS) * (1.0 - metallic);
 
-  let specular: f3 = kS * V * D * F;
-  let brdf: f3 = kD * diffuse / PI + specular;
+  let specular: f3 = D * F * G / (4.0 * cosNL * cosNV + 0.0001);
+  let brdf: f3 = diffuse * (kD / PI + kS * specular);
+
+  // var irradiance: f3 = f3(0.0);  
+  // var up: f3 = vec3(0.0, 1.0, 0.0);
+  // var right: f3 = cross(up, normal);
+  // up = cross(normal, right);
+
+  // var sampleDelta: f32 = 0.1;
+  // var nrSamples: f32 = 0.0; 
+
+  // for(var phi: f32 = 0.0; phi < 2.0 * PI; phi = phi + sampleDelta) {
+  //   for(var theta: f32 = 0.0; theta < 0.5 * PI; theta = theta + sampleDelta) {
+  //       // spherical to cartesian (in tangent space)
+  //       var tangentSample: f3 = f3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
+  //       // tangent space to world
+  //       var sampleVec: f3 = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N;
+  //       irradiance = irradiance + textureSample(envTexture, mySampler, sampleVec).rgb * cos(theta) * sin(theta);
+  //       nrSamples = nrSamples + 1.0;
+  //   }
+  // }
+  // irradiance = PI * irradiance * (1.0 / nrSamples);
 
   let ambient: f3 = ambientLightColor * ambientLightIndensity *
-    mix(texAbedo, texAbedo * irradiance, metallic);
-  
-  let outColor: f3 = texAO * ambient + texEmissive + brdf * cosNL;
+    mix(texAbedo, texAbedo * radiance, metallic);
+
+  var outColor: f3 = texAO * ambient + texEmissive + texAO * brdf * cosNL;
 
   return f4(outColor, 1.0);
+  // return f4(f3(irradiance), 1.0);
 }

@@ -5,16 +5,16 @@ type f3 = vec3<f32>;
 type f4 = vec4<f32>;
 
 struct CameraUniform {
-  ViewMatrix: m4;
-  ProjectionMatrix: m4;
-  ViewDir: f3;
-  ViewProjectionInverseMatrix: m4;
+  ViewMatrix: m4,
+  ProjectionMatrix: m4,
+  CameraPos: f3,
+  ViewProjectionInverseMatrix: m4,
 };
 
 struct TransformUniform {
-  ModelMatrix: m4;
-  ModelViewMatrix: m4;
-  NormalMatrix: m4;
+  ModelMatrix: m4,
+  ModelViewMatrix: m4,
+  NormalMatrix: m4,
 };
 
 @group(0)

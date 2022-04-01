@@ -22,7 +22,7 @@ export abstract class Camera {
   static readonly UniformKeys = {
     VIEW_MATRIX: 'ViewMatrix',
     PROJECTION_MATRIX: 'ProjectionMatrix',
-    VIEW_DIR: 'ViewDir',
+    CAMERA_POS: 'CameraPos',
     VIEW_PROJECTION_INVERSE: 'ViewProjectionInverseMatrix',
   }
 
@@ -43,7 +43,7 @@ export abstract class Camera {
       items: [
         { name: Camera.UniformKeys.VIEW_MATRIX, size: 4 * 16 },
         { name: Camera.UniformKeys.PROJECTION_MATRIX, size: 4 * 16 },
-        { name: Camera.UniformKeys.VIEW_DIR, size: 4 * 4 },
+        { name: Camera.UniformKeys.CAMERA_POS, size: 4 * 4 },
         { name: Camera.UniformKeys.VIEW_PROJECTION_INVERSE, size: 4 * 16 },
       ]
     });

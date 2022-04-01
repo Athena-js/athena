@@ -39,13 +39,12 @@ export class PerspectiveCamera extends Camera {
         Camera.UniformKeys.VIEW_MATRIX,
         this.viewMatrix.buffer
       );
-      const viewDir = this.lookAt.clone().sub(this.position).norminize();
-      const viewDirBuffer = new Float32Array(viewDir.toArray()).buffer;
+      const cameraPosBuffer = new Float32Array(this.position.toArray()).buffer;
 
       this.uniform.set(
         device,
-        Camera.UniformKeys.VIEW_DIR,
-        viewDirBuffer
+        Camera.UniformKeys.CAMERA_POS,
+        cameraPosBuffer
       )
     }
 

@@ -5,8 +5,8 @@ type f3 = vec3<f32>;
 type f4 = vec4<f32>;
 
 struct VertexOutput {
-  @builtin(position) fragPosition: f4;
-  @location(0) position: f3;
+  @builtin(position) fragPosition: f4,
+  @location(0) position: f3,
 };
 
 @stage(vertex)
