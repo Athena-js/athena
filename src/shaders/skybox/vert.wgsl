@@ -9,7 +9,7 @@ struct VertexOutput {
   @location(0) position: f3,
 };
 
-@stage(vertex)
+@vertex
 fn main(
   @location(0) position: f3
 ) -> VertexOutput {

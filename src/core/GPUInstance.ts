@@ -12,7 +12,7 @@ export class GPUInstance {
     this.ctx = ctx;
     this.adapter = adapter;
     this.device = device;
-    this.preferredFormat = this.ctx.getPreferredFormat(this.adapter);
+    this.preferredFormat = navigator.gpu.getPreferredCanvasFormat();
   }
 
 }

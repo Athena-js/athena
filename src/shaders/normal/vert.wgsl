@@ -31,7 +31,7 @@ struct VertexOutput {
   @location(3) color: f3,
 };
 
-@stage(vertex)
+@vertex
 fn main(
   @location(0) position: f3,
   @location(1) uv: f2,

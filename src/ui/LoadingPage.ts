@@ -8,7 +8,7 @@ export class LoadingPage {
   messageElement?: HTMLElement;
 
   constructor(canvas: HTMLCanvasElement) {
-    this.addCSS('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+    this.addCSS('https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.min.css');
     this.domElement = this.createPage();
     canvas.parentElement?.prepend(this.domElement)
   }

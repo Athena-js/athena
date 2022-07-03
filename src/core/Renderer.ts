@@ -234,8 +234,7 @@ export class Renderer {
       ctx.configure({
         device,
         format: this.presentationFormat,
-        size: this.presentationSize.toArray(),
-        compositingAlphaMode: 'opaque'
+        alphaMode: 'opaque'
       });
 
       this._colorAttachments = [{

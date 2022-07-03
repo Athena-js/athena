@@ -76,7 +76,7 @@ fn fresnelSchlick(cosTheta: f32, F0: f3) -> f3 {
   return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-@stage(fragment)
+@fragment
 fn main(
   @location(0) position: f3,
   @location(1) viewPosition: f3,

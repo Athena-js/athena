@@ -28,7 +28,7 @@ var<uniform> transform: TransformUniform;
 @group(1) @binding(0) var baseColorTexture: texture_cube<f32>;
 @group(1) @binding(1) var mySampler: sampler;
 
-@stage(fragment)
+@fragment
 fn main(
   @location(0) position: f3
 ) -> @location(0) f4 {

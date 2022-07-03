@@ -76,7 +76,7 @@ export class RenderPipeline {
     }
 
     this._pipeline = device.createRenderPipeline({
-      layout: this._pipelineLayout,
+      layout: this._pipelineLayout!,
       vertex: this._vertexState,
       fragment: this._fragmentState,
       primitive: this._premitive,
