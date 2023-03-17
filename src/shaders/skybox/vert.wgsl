@@ -1,8 +1,8 @@
-type m4 = mat4x4<f32>;
-type m3 = mat3x3<f32>;
-type f2 = vec2<f32>;
-type f3 = vec3<f32>;
-type f4 = vec4<f32>;
+alias m4 = mat4x4<f32>;
+alias m3 = mat3x3<f32>;
+alias f2 = vec2<f32>;
+alias f3 = vec3<f32>;
+alias f4 = vec4<f32>;
 
 struct VertexOutput {
   @builtin(position) fragPosition: f4,

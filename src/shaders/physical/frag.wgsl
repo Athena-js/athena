@@ -1,16 +1,16 @@
-type m4 = mat4x4<f32>;
-type m3 = mat3x3<f32>;
-type f2 = vec2<f32>;
-type f3 = vec3<f32>;
-type f4 = vec4<f32>;
+alias m4 = mat4x4<f32>;
+alias m3 = mat3x3<f32>;
+alias f2 = vec2<f32>;
+alias f3 = vec3<f32>;
+alias f4 = vec4<f32>;
 
-let PI: f32 = 3.14159626;
+const PI: f32 = 3.14159626;
 
-let ambientLightColor: f3 = f3(1.0, 1.0, 1.0);
-let ambientLightIndensity: f32 = 0.8;
-let dictionalLightColor: f3 = f3(1.0, 1.0, 1.0);
-let dictionalLightIndensity: f32 = 4.0;
-let dictionalLightDir: f3 = f3(5.0, 5.0, 5.0);
+const ambientLightColor: f3 = f3(1.0, 1.0, 1.0);
+const ambientLightIndensity: f32 = 0.8;
+const dictionalLightColor: f3 = f3(1.0, 1.0, 1.0);
+const dictionalLightIndensity: f32 = 4.0;
+const dictionalLightDir: f3 = f3(5.0, 5.0, 5.0);
 
 struct CameraUniform {
   ViewMatrix: m4,
