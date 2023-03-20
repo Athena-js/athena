@@ -1,4 +1,4 @@
-import { Observable } from "./observable";
+import { Observable } from "./Observable";
 
 export abstract class Recyclable {
 

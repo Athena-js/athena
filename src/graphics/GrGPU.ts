@@ -16,11 +16,14 @@ export class GrGPU extends Recyclable {
   /** gpu device */
   private _device?: GPUDevice;
 
+  /** canvas resize callbacks */
+  private _resizeCallbacks: ((width: number, height: number) => any)[] = [];
+
 
   /**
    * canvas dom element, must call initAsync first.
    */
-    get canvas () {
+  get canvas () {
     if (!this._canvas) throw new NullValueError();
     return this._canvas;
   }
@@ -75,6 +78,10 @@ export class GrGPU extends Recyclable {
     
   }
 
+  onResize(callback: (width: number, height: number) => any) {
+    this._resizeCallbacks.push(callback);
+  }
+
   /** Create Vertex Buffer Object. */
   createVertexBuffer (props: Omit<VertexBufferProps, 'gpu'>) {
     return new GrVertexBuffer({ gpu: this, ...props });
@@ -87,6 +94,7 @@ export class GrGPU extends Recyclable {
         if (entry.target != canvas) continue;
         canvas.width = entry.devicePixelContentBoxSize[0].inlineSize;
         canvas.height = entry.devicePixelContentBoxSize[0].blockSize;
+        this._resizeCallbacks.forEach(cb => cb(canvas.width, canvas.height));
       }
     });
     resizeObserver.observe(canvas);

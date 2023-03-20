@@ -62,16 +62,11 @@ export const run = async (canvas: HTMLCanvasElement) => {
   const device = gpu.device;
   const context = canvas.getContext('webgpu')!;
 
-  const devicePixelRatio = window.devicePixelRatio || 1;
-  const presentationSize = [
-    canvas.clientWidth * devicePixelRatio,
-    canvas.clientHeight * devicePixelRatio,
-  ];
+  const presentationSize = [canvas.width, canvas.height];
   const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
 
   context.configure({
     device,
-    size: presentationSize,
     format: presentationFormat,
     alphaMode: 'opaque',
   });
@@ -86,13 +81,6 @@ export const run = async (canvas: HTMLCanvasElement) => {
       { name: 'uv', format: 'float32x2' },
     ]
   });
-  // for (let i = 0; i < 36; i++) {
-  //   cubeVertexArray[i*10 + 4] = 1;
-  //   cubeVertexArray[i*10 + 5] = 0;
-  //   cubeVertexArray[i*10 + 6] = 0;
-  // }
-  // // vbo.write(cubeVertexArray);
-  // vbo.write(cubeVertexArray.slice(180), 180);
   const verticesBuffer = vbo.gpuBuffer;
 
   const pipeline = device.createRenderPipeline({
@@ -166,7 +154,7 @@ export const run = async (canvas: HTMLCanvasElement) => {
     },
   });
 
-  const depthTexture = device.createTexture({
+  let depthTexture = device.createTexture({
     size: presentationSize,
     format: 'depth24plus',
     usage: GPUTextureUsage.RENDER_ATTACHMENT,
@@ -228,7 +216,29 @@ export const run = async (canvas: HTMLCanvasElement) => {
     return modelViewProjectionMatrix as Float32Array;
   }
 
+  let resize = false;
+
   function frame() {
+    gpu.onResize((width, height) => {
+      presentationSize[0] = width;
+      presentationSize[1] = height;
+      resize = true;
+    });
+
+    if (resize) {
+      mat4.perspective(projectionMatrix, (2 * Math.PI) / 5, canvas.width / canvas.height, 1, 100.0);
+
+      depthTexture?.destroy();
+      depthTexture = device.createTexture({
+        size: presentationSize,
+        format: 'depth24plus',
+        usage: GPUTextureUsage.RENDER_ATTACHMENT,
+      });
+      
+      renderPassDescriptor.depthStencilAttachment!.view = depthTexture.createView();
+      resize = false;
+    }
+
     const transformationMatrix = getTransformationMatrix();
     device.queue.writeBuffer(
       uniformBuffer,
@@ -237,6 +247,7 @@ export const run = async (canvas: HTMLCanvasElement) => {
       transformationMatrix.byteOffset,
       transformationMatrix.byteLength
     );
+  
     (renderPassDescriptor.colorAttachments as any)[0].view = context
       .getCurrentTexture()
       .createView();
